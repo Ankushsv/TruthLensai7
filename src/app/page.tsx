@@ -6,11 +6,13 @@ import type { AnalysisRecord } from '@/services/analysis-records';
 import { runAnalysis } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AnalysisForm from '@/components/analysis/analysis-form';
+import AnalysisResults from '@/components/analysis/analysis-results';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 export default function AnalyzePage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisRecord | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -25,11 +27,15 @@ export default function AnalyzePage() {
     }
 
     setIsLoading(true);
+    setAnalysisResult(null);
 
     try {
       const result = await runAnalysis(content);
       if (result && result.id) {
-        router.push(`/analysis/${result.id}`);
+        setAnalysisResult(result);
+        // Optionally, you can still navigate, or just display results on the same page.
+        // For now, let's display on the same page and remove the automatic navigation.
+        // router.push(`/analysis/${result.id}`); 
       } else {
         throw new Error('Analysis failed to return a result with an ID.');
       }
@@ -40,10 +46,9 @@ export default function AnalyzePage() {
         title: 'Analysis Failed',
         description: 'Something went wrong. Please try again later.',
       });
+    } finally {
       setIsLoading(false);
     }
-    // No need to set loading to false here, as we are navigating away.
-    // It will be set to false if an error occurs.
   };
 
   return (
@@ -79,6 +84,12 @@ export default function AnalyzePage() {
             <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </CardContent>
         </Card>
+      )}
+
+      {!isLoading && analysisResult && (
+        <div className="mt-8">
+            <AnalysisResults result={analysisResult} />
+        </div>
       )}
 
     </div>
