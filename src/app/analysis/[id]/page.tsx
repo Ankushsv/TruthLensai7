@@ -15,10 +15,11 @@ export default function AnalysisDetailsPage({ params }: { params: { id: string }
     const [record, setRecord] = useState<AnalysisRecord | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const id = params.id;
 
     useEffect(() => {
-        if (params.id) {
-            getAnalysisById(params.id)
+        if (id) {
+            getAnalysisById(id)
                 .then(data => {
                     if (data) {
                         setRecord(data);
@@ -34,7 +35,7 @@ export default function AnalysisDetailsPage({ params }: { params: { id: string }
                     setIsLoading(false);
                 });
         }
-    }, [params.id]);
+    }, [id]);
 
     if (isLoading) {
         return (
