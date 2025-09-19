@@ -2,16 +2,17 @@
 
 import { analyzeContentCredibility, AnalyzeContentCredibilityOutput } from '@/ai/flows/analyze-content-credibility';
 import { explainCredibilityFindings, ExplainCredibilityFindingsOutput } from '@/ai/flows/explain-credibility-findings';
-import { createAnalysisRecord, AnalysisRecord } from '@/services/analysis-records';
+import { createAnalysisRecord, AnalysisRecord, AnalysisRecordCreate } from '@/services/analysis-records';
 
 export async function runAnalysis(content: string): Promise<AnalysisRecord | null> {
     try {
         const result = await analyzeContentCredibility({ content });
         if (result) {
-            const newRecord = await createAnalysisRecord({
+            const newRecordData: AnalysisRecordCreate = {
                 content,
                 ...result,
-            });
+            };
+            const newRecord = await createAnalysisRecord(newRecordData);
             return newRecord;
         }
         return null;

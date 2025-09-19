@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function AnalysisDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default function AnalysisDetailsPage({ params }: { params: { id: string } }) {
     const [record, setRecord] = useState<AnalysisRecord | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -97,6 +97,8 @@ export default function AnalysisDetailsPage({ params }: { params: Promise<{ id: 
     };
 
     const { Icon, colorClass, label } = getCredibilityInfo();
+    
+    const createdAtDate = record.createdAt ? new Date(record.createdAt) : new Date();
 
     return (
         <div className="container mx-auto max-w-4xl">
@@ -107,7 +109,7 @@ export default function AnalysisDetailsPage({ params }: { params: Promise<{ id: 
                         Credibility Analysis: {label}
                     </CardTitle>
                     <CardDescription>
-                        Detailed breakdown of the AI-powered credibility assessment from {new Date(record.createdAt).toLocaleString()}.
+                        Detailed breakdown of the AI-powered credibility assessment from {createdAtDate.toLocaleString()}.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
