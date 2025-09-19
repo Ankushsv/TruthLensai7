@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "1",
+      "description": "Abstract image representing data analysis",
+      "imageUrl": "https://picsum.photos/seed/1/800/600",
+      "imageHint": "abstract data analysis"
+    },
+    {
+      "id": "10",
+      "description": "Magnifying glass over a newspaper",
+      "imageUrl": "https://picsum.photos/seed/10/600/400",
+      "imageHint": "magnifying glass news"
+    },
+    {
+        "id": "11",
+        "description": "A balanced scale",
+        "imageUrl": "https://picsum.photos/seed/11/600/400",
+        "imageHint": "balanced scale"
+    },
+    {
+        "id": "12",
+        "description": "An official document with a seal",
+        "imageUrl": "https://picsum.photos/seed/12/600/400",
+        "imageHint": "official document"
+    },
+    {
+        "id": "13",
+        "description": "An illustration of a human brain with gears",
+        "imageUrl": "https://picsum.photos/seed/13/600/400",
+        "imageHint": "brain illustration"
+    },
+    {
+        "id": "14",
+        "description": "Digital footprints on a circuit board",
+        "imageUrl": "https://picsum.photos/seed/14/600/400",
+        "imageHint": "digital footprint"
+    },
+    {
+        "id": "15",
+        "description": "Detective tools like a magnifying glass and notepad",
+        "imageUrl": "https://picsum.photos/seed/15/600/400",
+        "imageHint": "detective tools"
+    }
+  ]
 }
