@@ -47,10 +47,11 @@ function toAnalysisRecord(doc: any): AnalysisRecord {
 
 
 export async function createAnalysisRecord(data: Omit<AnalysisRecord, 'id' | 'createdAt'>): Promise<AnalysisRecord> {
-    const docRef = await addDoc(collection(db, "analysisRecords"), {
+    const recordToCreate = {
         ...data,
         createdAt: serverTimestamp(),
-    });
+    };
+    const docRef = await addDoc(collection(db, "analysisRecords"), recordToCreate);
 
     const newRecord: AnalysisRecord = {
         ...data,
