@@ -20,7 +20,9 @@ export type AnalyzeContentCredibilityInput = z.infer<typeof AnalyzeContentCredib
 const AnalyzeContentCredibilityOutputSchema = z.object({
   credibilityScore: z.number().describe('A score indicating the credibility of the content (0-1).'),
   explanation: z.string().describe('A detailed explanation of the credibility analysis, highlighting specific aspects that contribute to the assessment.'),
-  flags: z.array(z.string()).describe('Specific issues or concerns raised by the analysis.'),
+  flags: z.array(z.string()).describe('Specific issues or concerns raised by the analysis (e.g., "clickbait", "bias", "fake claim").'),
+  sourcesChecked: z.array(z.string()).describe('A list of sources or types of sources checked (e.g., "fact-check databases", "major news outlets").'),
+  factCheckReferences: z.array(z.string()).describe('A list of URLs to external fact-check articles or other references that support the analysis.'),
 });
 export type AnalyzeContentCredibilityOutput = z.infer<typeof AnalyzeContentCredibilityOutputSchema>;
 
@@ -34,9 +36,13 @@ const analyzeContentCredibilityPrompt = ai.definePrompt({
   output: {schema: AnalyzeContentCredibilityOutputSchema},
   prompt: `You are an AI assistant designed to analyze the credibility of text or links provided by the user.
 
-  Analyze the following content and determine its credibility score, provide an explanation for the score, and list any specific issues or concerns raised by the analysis.
+  Analyze the following content and determine its credibility score, provide an explanation for the score, list any specific issues or concerns (flags), list the sources you would theoretically check, and provide any relevant fact-checking reference URLs.
 
   Content to analyze: {{{content}}}
+
+  - For 'flags', use terms like "clickbait", "strong emotional language", "potential bias", "unverified claim", "conspiracy theory".
+  - For 'sourcesChecked', list the categories of sources you are simulating checking, like "major news outlets", "scientific journals", "fact-checking websites (e.g., Snopes, PolitiFact)".
+  - For 'factCheckReferences', if you find specific, relevant fact-checking articles from reputable sources about the claims, provide their full URLs. If not, provide an empty array.
 
   Respond in a JSON format.
   `,

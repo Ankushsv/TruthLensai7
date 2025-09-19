@@ -1,26 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import type { AnalyzeContentCredibilityOutput } from '@/ai/flows/analyze-content-credibility';
+import { useRouter } from 'next/navigation';
+import type { AnalysisRecord } from '@/services/analysis-records';
 import { getExplanation } from '@/app/actions';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, CheckCircle, HelpCircle, Loader2, Sparkles } from 'lucide-react';
+import { AlertCircle, CheckCircle, HelpCircle, Loader2, Sparkles, ExternalLink, ListTree, Newspaper, Link as LinkIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 type AnalysisResultsProps = {
-  result: AnalyzeContentCredibilityOutput;
-  content: string;
+  result: AnalysisRecord;
 };
 
-export default function AnalysisResults({ result, content }: AnalysisResultsProps) {
+export default function AnalysisResults({ result }: AnalysisResultsProps) {
   const [detailedExplanation, setDetailedExplanation] = useState<string | null>(null);
   const [isExplanationLoading, setIsExplanationLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const credibilityPercent = Math.round(result.credibilityScore * 100);
 
@@ -28,7 +30,14 @@ export default function AnalysisResults({ result, content }: AnalysisResultsProp
     if (detailedExplanation) return;
     setIsExplanationLoading(true);
     try {
-        const explanationResult = await getExplanation(JSON.stringify(result), content);
+        const analysisString = JSON.stringify({
+            credibilityScore: result.credibilityScore,
+            explanation: result.explanation,
+            flags: result.flags,
+            sourcesChecked: result.sourcesChecked,
+            factCheckReferences: result.factCheckReferences
+        });
+        const explanationResult = await getExplanation(analysisString, result.content);
         if (explanationResult?.explanation) {
             setDetailedExplanation(explanationResult.explanation);
         } else {
@@ -73,13 +82,22 @@ export default function AnalysisResults({ result, content }: AnalysisResultsProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-            <Icon className={cn('size-6', colorClass)} />
-            Credibility Analysis: {label}
-        </CardTitle>
-        <CardDescription>
-            Here's the breakdown of our AI-powered credibility assessment.
-        </CardDescription>
+        <div className="flex justify-between items-start">
+            <div>
+                <CardTitle className="flex items-center gap-2">
+                    <Icon className={cn('size-6', colorClass)} />
+                    Credibility Analysis: {label}
+                </CardTitle>
+                <CardDescription>
+                    Here's the breakdown of our AI-powered credibility assessment.
+                </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+                <Link href={`/analysis/${result.id}`}>
+                    View Details <ExternalLink className="ml-2 size-3" />
+                </Link>
+            </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
@@ -95,18 +113,19 @@ export default function AnalysisResults({ result, content }: AnalysisResultsProp
 
         <div className="space-y-2">
             <h3 className="text-lg font-semibold">Key Findings</h3>
-            <p className="text-sm text-muted-foreground">{result.explanation}</p>
+            <p className="text-sm text-muted-foreground line-clamp-3">{result.explanation}</p>
         </div>
         
         {result.flags && result.flags.length > 0 && (
             <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Potential Issues Flagged</h3>
+                <h3 className="text-lg font-semibold flex items-center gap-2"><ListTree className="size-4 text-primary" />Potential Issues Flagged</h3>
                 <div className="flex flex-wrap gap-2">
-                {result.flags.map((flag, index) => (
+                {result.flags.slice(0, 3).map((flag, index) => (
                     <Badge key={index} variant="destructive">
                         {flag}
                     </Badge>
                 ))}
+                 {result.flags.length > 3 && <Badge variant="outline">+{result.flags.length - 3} more</Badge>}
                 </div>
             </div>
         )}

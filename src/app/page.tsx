@@ -1,19 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import type { AnalyzeContentCredibilityOutput } from '@/ai/flows/analyze-content-credibility';
+import { useRouter } from 'next/navigation';
+import type { AnalysisRecord } from '@/services/analysis-records';
 import { runAnalysis } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import AnalysisForm from '@/components/analysis/analysis-form';
-import AnalysisResults from '@/components/analysis/analysis-results';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 export default function AnalyzePage() {
-  const [analysisResult, setAnalysisResult] = useState<AnalyzeContentCredibilityOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [submittedContent, setSubmittedContent] = useState('');
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleAnalysis = async (content: string) => {
     if (!content.trim()) {
@@ -26,15 +25,13 @@ export default function AnalyzePage() {
     }
 
     setIsLoading(true);
-    setAnalysisResult(null);
-    setSubmittedContent(content);
 
     try {
       const result = await runAnalysis(content);
-      if (result) {
-        setAnalysisResult(result);
+      if (result && result.id) {
+        router.push(`/analysis/${result.id}`);
       } else {
-        throw new Error('Analysis failed to return a result.');
+        throw new Error('Analysis failed to return a result with an ID.');
       }
     } catch (error) {
       console.error(error);
@@ -43,10 +40,10 @@ export default function AnalyzePage() {
         title: 'Analysis Failed',
         description: 'Something went wrong. Please try again later.',
       });
-      setAnalysisResult(null);
-    } finally {
       setIsLoading(false);
     }
+    // No need to set loading to false here, as we are navigating away.
+    // It will be set to false if an error occurs.
   };
 
   return (
@@ -84,9 +81,6 @@ export default function AnalyzePage() {
         </Card>
       )}
 
-      {analysisResult && (
-        <AnalysisResults result={analysisResult} content={submittedContent} />
-      )}
     </div>
   );
 }
