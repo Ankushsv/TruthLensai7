@@ -12,22 +12,52 @@ export type AnalysisRecord = {
     flags: string[];
     sourcesChecked: string[];
     factCheckReferences: string[];
-    createdAt: Timestamp | Date | string; // Allow multiple types for compatibility
+    createdAt: string; // Changed to string for serialization
 };
 
 export type AnalysisRecordCreate = Omit<AnalysisRecord, 'id' | 'createdAt'>;
 
-export async function createAnalysisRecord(data: AnalysisRecordCreate): Promise<AnalysisRecord> {
+// Helper to convert Firestore data to AnalysisRecord, ensuring createdAt is a string
+function toAnalysisRecord(doc: any): AnalysisRecord {
+    const data = doc.data();
+    const createdAt = data.createdAt;
+    let createdAtString: string;
+
+    if (createdAt instanceof Timestamp) {
+        createdAtString = createdAt.toDate().toISOString();
+    } else if (createdAt instanceof Date) {
+        createdAtString = createdAt.toISOString();
+    } else if (typeof createdAt === 'string') {
+        createdAtString = createdAt;
+    } else {
+        createdAtString = new Date().toISOString();
+    }
+
+    return {
+        id: doc.id,
+        content: data.content,
+        credibilityScore: data.credibilityScore,
+        explanation: data.explanation,
+        flags: data.flags,
+        sourcesChecked: data.sourcesChecked,
+        factCheckReferences: data.factCheckReferences,
+        createdAt: createdAtString,
+    };
+}
+
+
+export async function createAnalysisRecord(data: Omit<AnalysisRecord, 'id' | 'createdAt'>): Promise<AnalysisRecord> {
     const docRef = await addDoc(collection(db, "analysisRecords"), {
         ...data,
         createdAt: serverTimestamp(),
     });
 
-    return {
+    const newRecord: AnalysisRecord = {
         ...data,
         id: docRef.id,
         createdAt: new Date().toISOString(), // Return an ISO string for immediate use
     };
+    return newRecord;
 }
 
 export async function getAnalysisById(id: string): Promise<AnalysisRecord | null> {
@@ -35,19 +65,7 @@ export async function getAnalysisById(id: string): Promise<AnalysisRecord | null
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-        const data = docSnap.data();
-        const createdAt = data.createdAt;
-
-        return {
-            id: docSnap.id,
-            content: data.content,
-            credibilityScore: data.credibilityScore,
-            explanation: data.explanation,
-            flags: data.flags,
-            sourcesChecked: data.sourcesChecked,
-            factCheckReferences: data.factCheckReferences,
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate() : new Date(createdAt),
-        } as AnalysisRecord;
+        return toAnalysisRecord(docSnap);
     } else {
         return null;
     }
@@ -57,21 +75,5 @@ export async function getRecentAnalyses(count: number = 10): Promise<AnalysisRec
     const q = query(collection(db, "analysisRecords"), orderBy("createdAt", "desc"), limit(count));
     const querySnapshot = await getDocs(q);
     
-    const records: AnalysisRecord[] = [];
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const createdAt = data.createdAt;
-        records.push({
-            id: doc.id,
-            content: data.content,
-            credibilityScore: data.credibilityScore,
-            explanation: data.explanation,
-            flags: data.flags,
-            sourcesChecked: data.sourcesChecked,
-            factCheckReferences: data.factCheckReferences,
-            createdAt: createdAt instanceof Timestamp ? createdAt.toDate() : new Date(createdAt),
-        } as AnalysisRecord);
-    });
-    
-    return records;
+    return querySnapshot.docs.map(toAnalysisRecord);
 }
