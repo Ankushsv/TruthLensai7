@@ -9,10 +9,15 @@ import { z } from 'genkit';
 
 // Dummy data for evidence - in a real-world scenario, this would come from a vector database.
 const FAKE_EVIDENCE_DB: Record<string, string[]> = {
-    'lemon water cures diseases': [
-        'A 2022 study in the Journal of Health Sciences found no link between lemon water and disease prevention.',
-        'The World Health Organization does not list lemon water as a cure for any major illness.',
-        'Medical experts on WebMD state that while lemon water provides vitamin C, it is not a "miracle cure".',
+    'Ocean-powered cryptocurrency': [
+        'A report from the Global Tech Council released yesterday calls the concept of "hydro-crypto" promising but technologically unproven.',
+        'MIT Technology Review published an article this morning questioning the energy efficiency claims of generating cryptocurrency using ocean currents.',
+        'The official whitepaper for "AquaCoin" contains several unsourced claims about its partnership with major shipping companies.',
+    ],
+    'celebrity endorses miracle diet': [
+        'The FDA released a consumer alert today warning against "MiracleBurn" pills, stating they contain unauthorized ingredients.',
+        'Entertainment Weekly noted that the celebrity in question has previously promoted other scientifically unsupported products.',
+        'A fact-check from Snopes.com yesterday found no independent studies confirming the effectiveness of the "MiracleBurn" diet.',
     ],
     'dancing robots are real': [
         'Boston Dynamics has released several videos of their robots dancing, showcasing advanced mobility.',
