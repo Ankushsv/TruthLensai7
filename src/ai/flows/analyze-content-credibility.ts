@@ -11,6 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { retrieveEvidence } from '@/ai/tools/evidence-retriever';
 
 const AnalyzeContentCredibilityInputSchema = z.object({
   content: z.string().describe('The text or link to analyze for credibility.'),
@@ -34,14 +35,21 @@ const analyzeContentCredibilityPrompt = ai.definePrompt({
   name: 'analyzeContentCredibilityPrompt',
   input: {schema: AnalyzeContentCredibilityInputSchema},
   output: {schema: AnalyzeContentCredibilityOutputSchema},
+  tools: [retrieveEvidence],
   prompt: `You are an AI assistant designed to analyze the credibility of text or links provided by the user.
 
-  Analyze the following content and determine its credibility score, provide an explanation for the score, list any specific issues or concerns (flags), list the sources you would theoretically check, and provide any relevant fact-checking reference URLs.
+  Your goal is to determine a credibility score and provide a detailed analysis.
+
+  Follow these steps:
+  1.  Examine the user's content.
+  2.  If the content contains a specific, verifiable claim, use the 'retrieveEvidence' tool to gather factual evidence from the knowledge base.
+  3.  Analyze the content in conjunction with the retrieved evidence (if any).
+  4.  Determine the credibility score, provide an explanation, and list any issues, sources checked, and fact-checking URLs.
 
   Content to analyze: {{{content}}}
 
   - For 'flags', use terms like "clickbait", "strong emotional language", "potential bias", "unverified claim", "conspiracy theory".
-  - For 'sourcesChecked', list the categories of sources you are simulating checking, like "major news outlets", "scientific journals", "fact-checking websites (e.g., Snopes, PolitiFact)".
+  - For 'sourcesChecked', list the categories of sources you are simulating checking, like "major news outlets", "scientific journals", "fact-checking websites (e.g., Snopes, PolitiFact)", and crucially, include "Internal Knowledge Base" if you used the retrieveEvidence tool.
   - For 'factCheckReferences', if you find specific, relevant fact-checking articles from reputable sources about the claims, provide their full URLs. If not, provide an empty array.
 
   Respond in a JSON format.
