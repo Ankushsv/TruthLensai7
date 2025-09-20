@@ -39,8 +39,14 @@ export const retrieveEvidence = ai.defineTool(
         }),
     },
     async (input) => {
-        console.log(`Searching for evidence related to: ${input.claim}`);
-        // In a real application, this would query a vector database (e.g., using Vertex AI Embeddings).
+        console.log(`Simulating a vector DB search for evidence related to: ${input.claim}`);
+        // In a real application, this would do one of the following:
+        // 1. Convert the input.claim to an embedding using a model like text-embedding-004.
+        // 2. Query a vector database (e.g., Vertex AI Vector Search) for the top 3-5 most relevant evidence snippets.
+        // OR
+        // 1. Call a web search API (e.g., Google Custom Search) with the input.claim.
+        // 2. Scrape and process the top results to use as evidence.
+        
         // For this prototype, we simulate a search against a small, fake dataset.
         const lowerCaseClaim = input.claim.toLowerCase();
         for (const key in FAKE_EVIDENCE_DB) {
@@ -49,7 +55,7 @@ export const retrieveEvidence = ai.defineTool(
                 return { evidence: FAKE_EVIDENCE_DB[key] };
             }
         }
-        console.log('No specific evidence found.');
+        console.log('No specific evidence found in the simulated database.');
         return { evidence: [] };
     }
 );
