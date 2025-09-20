@@ -30,13 +30,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    // This is needed to allow the Next.js dev server to be accessed from the container
-    ...(process.env.NODE_ENV === 'development' && {
-      // No longer using allowedDevOrigins here
-    }),
-  },
-  // Add allowedDevOrigins here for development environment
+  // Add allowedDevOrigins here for the development environment
   ...(process.env.NODE_ENV === 'development' && {
     allowedDevOrigins: ['https://*.cloudworkstations.dev'],
   }),
