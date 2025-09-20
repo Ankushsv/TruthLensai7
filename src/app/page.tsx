@@ -53,10 +53,10 @@ export default function AnalyzePage() {
 
   return (
     <div className="container mx-auto max-w-4xl">
-      <Card className="mb-8 overflow-hidden border-0 shadow-none md:border md:shadow-sm md:rounded-lg">
+      <Card className="mb-8 overflow-hidden">
         <div className="grid md:grid-cols-2">
             <div className="p-8 flex flex-col justify-center">
-                 <h1 className="text-3xl font-headline font-bold mb-2">Clarity in a Click</h1>
+                 <h1 className="text-3xl font-bold tracking-tighter mb-2">Clarity in a Click</h1>
                 <p className="text-muted-foreground mb-6">
                     Use our AI-powered tool to assess the credibility of articles, posts, or any text. Paste content or a link to get an instant analysis and uncover potential misinformation.
                 </p>
@@ -68,6 +68,7 @@ export default function AnalyzePage() {
                     alt="Abstract image representing data analysis"
                     fill
                     style={{ objectFit: 'cover' }}
+                    className="opacity-75"
                     data-ai-hint="abstract data analysis"
                 />
             </div>

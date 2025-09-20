@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AlertCircle, CheckCircle, HelpCircle, Loader2, Sparkles, ExternalLink, ListTree, Newspaper, Link as LinkIcon } from 'lucide-react';
+import { AlertCircle, CheckCircle, HelpCircle, Loader2, Sparkles, ExternalLink, ListTree } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -94,7 +94,7 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
             </div>
             <Button variant="outline" size="sm" asChild>
                 <Link href={`/analysis/${result.id}`}>
-                    View Details <ExternalLink className="ml-2 size-3" />
+                    View Full Report <ExternalLink className="ml-2 size-3" />
                 </Link>
             </Button>
         </div>
@@ -113,12 +113,12 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
 
         <div className="space-y-2">
             <h3 className="text-lg font-semibold">Key Findings</h3>
-            <p className="text-sm text-muted-foreground line-clamp-3">{result.explanation}</p>
+            <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">{result.explanation}</p>
         </div>
         
         {result.flags && result.flags.length > 0 && (
-            <div className="space-y-2">
-                <h3 className="text-lg font-semibold flex items-center gap-2"><ListTree className="size-4 text-primary" />Potential Issues Flagged</h3>
+            <div className="space-y-3">
+                <h3 className="text-lg font-semibold flex items-center gap-2"><ListTree className="size-5 text-primary" />Potential Issues Flagged</h3>
                 <div className="flex flex-wrap gap-2">
                 {result.flags.slice(0, 3).map((flag, index) => (
                     <Badge key={index} variant="destructive">
@@ -131,22 +131,22 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
         )}
 
         <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-                <AccordionTrigger onClick={handleGetExplanation} className="[&[data-state=open]>div>button]:text-accent">
+            <AccordionItem value="item-1" className="border-b-0">
+                <AccordionTrigger onClick={handleGetExplanation} className="hover:no-underline -ml-1.5 py-2">
                     <div className="flex items-center cursor-pointer w-full">
-                        <Button variant="link" className="p-0 h-auto text-base text-muted-foreground hover:text-accent transition-colors">
+                        <Button variant="link" className="p-0 h-auto text-base font-semibold text-primary hover:no-underline transition-colors">
                             <Sparkles className="mr-2 size-4"/> Need more clarity? Get a detailed AI explanation.
                         </Button>
                     </div>
                 </AccordionTrigger>
-                <AccordionContent className="pt-4 border-t">
+                <AccordionContent className="pt-2">
                     {isExplanationLoading && (
                          <div className="flex items-center gap-2 text-muted-foreground">
                             <Loader2 className="animate-spin size-4"/> Generating detailed explanation...
                          </div>
                     )}
                     {detailedExplanation && (
-                        <div className="text-sm text-foreground/90 leading-relaxed">
+                        <div className="text-sm text-foreground/90 leading-relaxed prose prose-sm">
                             <p>{detailedExplanation}</p>
                         </div>
                     )}
