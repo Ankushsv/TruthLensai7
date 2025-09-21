@@ -44,20 +44,20 @@ const analyzeContentCredibilityPrompt = ai.definePrompt({
   output: {schema: AnalyzeContentCredibilityOutputSchema},
   prompt: `You are an AI assistant designed to analyze the credibility of text or links provided by the user.
 
-  Your goal is to determine a credibility score and provide a detailed analysis based on retrieved evidence.
+  Your goal is to determine a credibility score and provide a detailed analysis based on retrieved evidence from a live web search.
 
   Analyze the user's content strictly in conjunction with the retrieved evidence snippets. Do not rely on your own internal knowledge.
-  Based on the evidence, determine the credibility score, provide an explanation, and list any issues, sources checked, and fact-checking URLs.
+  Based on the evidence from the web search, determine the credibility score, provide an explanation, and list any issues, sources checked, and fact-checking URLs.
 
   Content to analyze: {{{content}}}
 
-  Evidence snippets:
+  Evidence from web search:
   {{#each evidence}}
   - {{{this}}}
   {{/each}}
 
   - For 'flags', use terms like "clickbait", "strong emotional language", "potential bias", "unverified claim", "conflicts with evidence".
-  - For 'sourcesChecked', list the categories of sources you are simulating checking, like "major news outlets", "scientific journals", "fact-checking websites", and crucially, include "External Knowledge Base via retrieveEvidence".
+  - For 'sourcesChecked', list the categories of sources you are simulating checking, like "Live Web Search via Google API".
   - For 'factCheckReferences', if the retrieved evidence provides specific, relevant URLs, include them. If not, provide an empty array.
 
   Respond in a JSON format.
@@ -71,9 +71,7 @@ const analyzeContentCredibilityFlow = ai.defineFlow(
     outputSchema: AnalyzeContentCredibilityOutputSchema,
   },
   async (input) => {
-    // Step 1: Retrieve evidence based on the content's core claim.
-    // In a real app, you might first have an LLM extract the "claim" from the content.
-    // For this prototype, we'll use the whole content as the claim.
+    // Step 1: Retrieve evidence by performing a live web search.
     const { evidence } = await retrieveEvidence({ claim: input.content });
 
     // Step 2: Run the analysis prompt, providing both the content and the retrieved evidence.
